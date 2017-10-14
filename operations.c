@@ -12,6 +12,9 @@
 
 int revs_getattr(const char *path, struct stat *stbuf){
 
+    if (strstr(path, "/*") != 0)
+        return -2;
+
     struct stats *stats;
     memset(stbuf, 0, sizeof(struct stat));
 
@@ -21,11 +24,14 @@ int revs_getattr(const char *path, struct stat *stbuf){
         return -1;
     }
     stbuf->st_size = stats->size;
-    if (stats->type == S_IFDIR)
+    if (stats->type == S_IFDIR) { 
         stbuf->st_mode = stats->type | 0555;
-    else
+	stbuf->st_nlink = 2;
+    } else {
         stbuf->st_mode = stats->type | 0444;
-    stbuf->st_nlink = stats->nlink;
+	stbuf->st_nlink = 1;
+    }
+    // stbuf->st_nlink = stats->nlink;
     stbuf->st_mtime = stats->ctime;
     stbuf->st_ctime = stats->ctime;
     stbuf->st_atime = stats->atime;

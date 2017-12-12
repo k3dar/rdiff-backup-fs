@@ -210,7 +210,7 @@ int gstrswp(char **first, char **second){
 int gstrline(char **line, size_t *length, FILE *file){
 	
 	int filled = 0;
-	char next = 0;
+	int next = 0;
 	char *temp = NULL;
 	
 	if (line == NULL)
@@ -223,8 +223,8 @@ int gstrline(char **line, size_t *length, FILE *file){
 		memset(*line, 0, *length);
 
 	while (1){
-		next = (char) getc(file);
-		if (next == EOF){
+		next = getc(file);
+		if (next == -1 || (char) next == EOF){
 			if (filled == 0)
 				return -1;
 			else
@@ -237,9 +237,9 @@ int gstrline(char **line, size_t *length, FILE *file){
 			*line = gstralloc(*length);
 			strcpy(*line, temp);
 		};
-		(*line)[filled] = next;
+		(*line)[filled] = (char) next;
 		filled++;
-		if (next == '\n')
+		if ((char) next == '\n')
 			return filled;
 	};
 	
